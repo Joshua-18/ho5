@@ -64,7 +64,7 @@ BEGIN
   IF lv_taxes IS NULL THEN
     p_taxes := 0;
   ELSE 
-    p_taxes := lv_taxes * p_subtot;
+    p_taxes := lv_taxes;
   END IF;
   
 END TAX_COST_SP;
@@ -76,18 +76,3 @@ BEGIN
 DBMS_OUTPUT.PUT_LINE('Your taxes are:'|| TO_CHAR(lv_taxes, '$999.99'));
 END;
 /    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
