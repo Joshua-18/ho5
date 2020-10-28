@@ -78,20 +78,19 @@ END;
 /    
 -- #5-4
 CREATE OR REPLACE PROCEDURE BASKET_CONFIRM_SP 
-(p_orderplaced bb_basket.orderplaced%TYPE,
- p_subtotal    bb_basket.subtotal%TYPE,
- p_shipping    bb_basket.shipping%TYPE,
- p_tax         bb_basket.tax%TYPE,
- p_total       bb_basket.total%TYPE,
- p_idbask      bb_basket.idbasket%TYPE)
-AS 
+(p_subtotal  IN  bb_basket.subtotal%TYPE,
+ p_shipping  IN  bb_basket.shipping%TYPE,
+ p_tax       IN  bb_basket.tax%TYPE,
+ p_total     IN  bb_basket.total%TYPE,
+ p_idbask    IN  bb_basket.idbasket%TYPE)
+IS 
 BEGIN
   UPDATE bb_basket
-    SET p_orderplaced = 1,
-        p_subtotal = subtotal,
-        p_shipping = shipping,
-        p_tax = tax,
-        p_total = total,
+    SET subtotal = p_subtotal,
+        shipping = p_shipping,
+        tax = p_tax,
+        total = p_total,
+        orderplaced = 1
     WHERE idbasket = p_idbask;
     COMMIT;
 END BASKET_CONFIRM_SP;
