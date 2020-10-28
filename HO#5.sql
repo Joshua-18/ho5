@@ -94,3 +94,15 @@ BEGIN
     WHERE idbasket = p_idbask;
     COMMIT;
 END BASKET_CONFIRM_SP;
+/
+INSERT INTO bb_basket (idbasket, quantity, idshopper, orderplaced, subtotal,
+                       total, shipping, tax, dtcreated, promo)
+       VALUES (17,2,22,0,0,0,0,0,'28-FEB-12',0);
+INSERT INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
+                           option1, option2)
+       VALUES (44,7,10.8,3,17,2,3);
+INSERT INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
+                           option1, option2)
+       VALUES (45,8,10.8,3,17,2,3);
+COMMIT;
+/
