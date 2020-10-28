@@ -77,3 +77,21 @@ DBMS_OUTPUT.PUT_LINE('Your taxes are:'|| TO_CHAR(lv_taxes, '$999.99'));
 END;
 /    
 -- #5-4
+CREATE OR REPLACE PROCEDURE BASKET_CONFIRM_SP 
+(p_orderplaced bb_basket.orderplaced%TYPE,
+ p_subtotal    bb_basket.subtotal%TYPE,
+ p_shipping    bb_basket.shipping%TYPE,
+ p_tax         bb_basket.tax%TYPE,
+ p_total       bb_basket.total%TYPE,
+ p_idbask      bb_basket.idbasket%TYPE)
+AS 
+BEGIN
+  UPDATE bb_basket
+    SET p_orderplaced = 1,
+        p_subtotal = subtotal,
+        p_shipping = shipping,
+        p_tax = tax,
+        p_total = total,
+    WHERE idbasket = p_idbask;
+    COMMIT;
+END BASKET_CONFIRM_SP;
