@@ -106,3 +106,6 @@ INSERT INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
        VALUES (45,8,10.8,3,17,2,3);
 COMMIT;
 /
+BEGIN BASKET_CONFIRM_SP(17,64.80,8.00,1.94,74.74);
+END;
+/
