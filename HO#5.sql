@@ -109,3 +109,6 @@ COMMIT;
 BEGIN BASKET_CONFIRM_SP(17,64.80,8.00,1.94,74.74);
 END;
 /
+SELECT subtotal, shipping, tax, total, orderplaced
+FROM bb_basket
+WHERE idbasket = 17;
