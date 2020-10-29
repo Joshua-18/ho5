@@ -77,12 +77,19 @@ DBMS_OUTPUT.PUT_LINE('Your taxes are:'|| TO_CHAR(lv_taxes, '$999.99'));
 END;
 /    
 -- #5-4
+DELETE FROM bb_basketitem WHERE
+    idbasketitem = 44;
+DELETE FROM bb_basketitem WHERE
+    idbasketitem = 45;
+DELETE FROM bb_basket WHERE
+    idbasket = 17;
 CREATE OR REPLACE PROCEDURE BASKET_CONFIRM_SP 
-(p_subtotal  IN  bb_basket.subtotal%TYPE,
+(p_idbask    IN  bb_basket.idbasket%TYPE,
+ p_subtotal  IN  bb_basket.subtotal%TYPE,
  p_shipping  IN  bb_basket.shipping%TYPE,
  p_tax       IN  bb_basket.tax%TYPE,
- p_total     IN  bb_basket.total%TYPE,
- p_idbask    IN  bb_basket.idbasket%TYPE)
+ p_total     IN  bb_basket.total%TYPE
+ )
 IS 
 BEGIN
   UPDATE bb_basket
@@ -94,21 +101,27 @@ BEGIN
     WHERE idbasket = p_idbask;
     COMMIT;
 END BASKET_CONFIRM_SP;
-/
-INSERT INTO bb_basket (idbasket, quantity, idshopper, orderplaced, subtotal,
+/   
+INSERT ALL 
+    INTO bb_basket (idbasket, quantity, idshopper, orderplaced, subtotal,
                        total, shipping, tax, dtcreated, promo)
-       VALUES (17,2,22,0,0,0,0,0,'28-FEB-12',0);
-INSERT INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
+       VALUES (17,2,22,0,0,0,0,0,'28-FEB-12',0) 
+
+    INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
                            option1, option2)
-       VALUES (44,7,10.8,3,17,2,3);
-INSERT INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
+       VALUES (44,7,10.8,3,17,2,3)
+    INTO bb_basketitem (idbasketitem, idproduct, price, quantity, idbasket,
                            option1, option2)
-       VALUES (45,8,10.8,3,17,2,3);
+       VALUES (45,8,10.8,3,17,2,3)
+    SELECT * FROM DUAL;   
 COMMIT;
 /
-BEGIN BASKET_CONFIRM_SP(17,64.80,8.00,1.94,74.74);
+BEGIN 
+    basket_confirm_sp(17,64.80,8.00,1.94,74.74);
 END;
 /
 SELECT subtotal, shipping, tax, total, orderplaced
 FROM bb_basket
 WHERE idbasket = 17;
+/
+-- #
