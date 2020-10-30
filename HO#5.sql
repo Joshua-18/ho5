@@ -138,3 +138,10 @@ BEGIN
   commit;
 END STATUS_SHIP_SP;
 /
+BEGIN
+    STATUS_SHIP_SP(3, '20-FEB-12', 'UPS', 'ZW2384YXK4957');
+END;
+/
+SELECT idstatus, idbasket, idstage, dtstage, shipper, shippingnum
+FROM bb_basketstatus;
+/
