@@ -145,3 +145,42 @@ END;
 SELECT idstatus, idbasket, idstage, dtstage, shipper, shippingnum
 FROM bb_basketstatus;
 /
+-- # 5-6
+CREATE OR REPLACE PROCEDURE STATUS_SP 
+(p_basketid     IN  bb_basketstatus.idbasket%TYPE,
+ p_date         OUT bb_basketstatus.dtstage%TYPE,
+ p_descr        OUT bb_basketstatus.notes%TYPE)
+AS
+lv_stage bb_basketstatus.idstage%TYPE;
+CURSOR cur_stat IS
+SELECT idstage, dtstage
+  INTO lv_stage, p_date  
+  FROM bb_basketstatus
+  WHERE idbasket = p_basketid
+  ORDER BY dtstage DESC;
+BEGIN
+  OPEN cur_stat;
+  FETCH cur_stat INTO lv_stage, p_date;
+  CASE lv_stage
+    WHEN 1 THEN p_descr := 'Submitted and received';
+    WHEN 2 THEN p_descr := 'Confirmed, processed, sent to shipping';
+    WHEN 3 THEN p_descr := 'Shipped';
+    WHEN 4 THEN p_descr := 'Cancelled';
+    WHEN 5 THEN p_descr := 'Back-ordered';
+    ELSE p_descr := 'Status not availiable.';
+  END CASE;
+END STATUS_SP;
+/
+DECLARE
+    lv_date DATE;
+    lv_desc VARCHAR2(50);
+BEGIN
+    STATUS_SP(4,lv_date, lv_desc);
+    DBMS_OUTPUT.PUT_LINE(lv_date);
+    DBMS_OUTPUT.PUT_LINE(lv_desc);
+--    DBMS_OUTPUT.PUT_LINE('');
+    STATUS_SP(6,lv_date, lv_desc);
+    DBMS_OUTPUT.PUT_LINE(lv_date);
+    DBMS_OUTPUT.PUT_LINE(lv_desc);
+END;
+/
