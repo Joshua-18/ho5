@@ -124,4 +124,17 @@ SELECT subtotal, shipping, tax, total, orderplaced
 FROM bb_basket
 WHERE idbasket = 17;
 /
--- #
+-- # 5-5
+CREATE OR REPLACE PROCEDURE STATUS_SHIP_SP
+(p_baskid   IN  bb_basketstatus.idbasket%TYPE,
+ p_date     IN  DATE,
+ p_shipp    IN  bb_basketstatus.shipper%TYPE,
+ p_shippnum IN  bb_basketstatus.shippingnum%TYPE)
+AS 
+BEGIN
+  INSERT INTO bb_basketstatus (idstatus, idbasket, idstage, dtstage, 
+            shipper, shippingnum)
+    VALUES (bb_status_seq.nextval, p_baskid, 3, p_date, p_shipp, p_shippnum);
+  commit;
+END STATUS_SHIP_SP;
+/
