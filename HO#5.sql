@@ -184,3 +184,40 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(lv_desc);
 END;
 /
+-- #5-7
+CREATE OR REPLACE PROCEDURE PROMO_SHIP_SP
+(p_date     IN  DATE,
+ p_month    IN  bb_promolist.month%TYPE,
+ p_year     IN  bb_promolist.year%TYPE)
+AS
+lv_minim          bb_basket.idshopper%TYPE;
+lv_maxim          bb_basket.idshopper%TYPE;
+lv_date         bb_basket.dtcreated%TYPE;
+lv_shopp      bb_basket.idshopper%TYPE;
+lv_prom_flag    NUMBER;
+BEGIN
+  SELECT min(idshopper), max(idshopper)
+  INTO lv_minim, lv_maxim
+  FROM bb_basket;
+  
+  FOR i IN lv_minim .. lv_maxim LOOP
+  SELECT max(dtcreated)
+  INTO lv_date
+  FROM bb_basket
+  WHERE idshopper = i;
+ 
+     IF p_date >= lv_date THEN
+         SELECT count(idshopper)
+         INTO lv_prom_flag
+         FROM bb_promolist
+         WHERE i = idshopper;
+   
+         IF lv_prom_flag = 1 THEN CONTINUE;
+         ELSE 
+            INSERT INTO bb_promolist (idshopper, month, year, promo_flag, used)
+            VALUES(i, p_month, p_year, 1, 'Y');
+         END IF;
+     END IF;
+  END LOOP;
+COMMIT;
+END PROMO_SHIP_SP;
