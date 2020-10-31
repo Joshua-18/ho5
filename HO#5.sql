@@ -230,3 +230,27 @@ END;
 /
 SELECT idshopper, month, year, promo_flag, used
 FROM bb_promolist;
+/
+-- # 5-8
+CREATE OR REPLACE PROCEDURE BASKET_ADD_SP 
+(p_baskid    IN bb_basketitem.idbasket%TYPE,
+ p_produid   IN bb_basketitem.idproduct%TYPE,
+ p_qty       IN bb_basketitem.quantity%TYPE,
+ p_price     IN bb_basketitem.price%TYPE,
+ p_size      IN bb_basketitem.option1%TYPE,
+ p_form      IN bb_basketitem.option2%TYPE)
+AS 
+BEGIN
+  INSERT INTO bb_basketitem (idbasketitem, idproduct, quantity, price,
+                             idbasket, option1, option2)
+  VALUES (bb_idbasketitem_seq.NEXTVAL, p_produid, p_qty, p_price,
+          p_baskid, p_size, p_form);
+  COMMIT;
+END BASKET_ADD_SP;
+/
+BEGIN
+  basket_add_sp(14,8,1,10.80,2,4);
+END;
+/
+SELECT *
+FROM bb_basketitem; 
