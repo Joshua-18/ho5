@@ -185,6 +185,8 @@ BEGIN
 END;
 /
 -- #5-7
+DELETE FROM bb_promolist WHERE
+    year = 2012;
 CREATE OR REPLACE PROCEDURE PROMO_SHIP_SP
 (p_date     IN  DATE,
  p_month    IN  bb_promolist.month%TYPE,
@@ -215,9 +217,16 @@ BEGIN
          IF lv_prom_flag = 1 THEN CONTINUE;
          ELSE 
             INSERT INTO bb_promolist (idshopper, month, year, promo_flag, used)
-            VALUES(i, p_month, p_year, 1, 'Y');
+            VALUES(i, p_month, p_year, 1, 'N');
          END IF;
      END IF;
   END LOOP;
 COMMIT;
 END PROMO_SHIP_SP;
+/
+BEGIN
+    PROMO_SHIP_SP('15-FEB-12', 'APR', 2012);
+END;
+/
+SELECT idshopper, month, year, promo_flag, used
+FROM bb_promolist;
