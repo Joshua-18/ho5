@@ -1,7 +1,8 @@
 -- Joshua Membreno
 
 -- #5-1
-CREATE OR REPLACE PROCEDURE prod_name_sp
+CREATE OR REPLACE 
+PROCEDURE prod_name_sp
   (p_prodid IN bb_product.idproduct%TYPE,
    p_descrip IN bb_product.description%TYPE)
   IS
@@ -16,11 +17,12 @@ BEGIN
 prod_name_sp(1,'CapressoBar Model #388');
 END;
 /
-SELECT idproduct, description
+SELECT *
   FROM bb_product;
 /
 -- #5-2
-CREATE OR REPLACE PROCEDURE PROD_ADD_SP 
+CREATE OR REPLACE 
+PROCEDURE PROD_ADD_SP 
 (p_name IN bb_product.productname%TYPE,
  p_descrip IN bb_product.description%TYPE,
  p_image IN bb_product.productimage%TYPE,
@@ -44,12 +46,13 @@ prod_add_sp('Roasted Blend','Well-balanced mix of roasted beans, medium body',
 'roasted.jpg', 9.50, 1);
 END;
 /
-SELECT idproduct, productname, description, productimage, price, active
+SELECT *
 FROM bb_product
 WHERE productname = 'Roasted Blend';
 /
 -- #5-3
-CREATE OR REPLACE PROCEDURE TAX_COST_SP 
+CREATE OR REPLACE 
+PROCEDURE TAX_COST_SP 
 (p_state IN bb_tax.state%TYPE,
  p_subtot IN bb_basket.subtotal%TYPE,
  p_taxes OUT NUMBER)
@@ -125,7 +128,8 @@ FROM bb_basket
 WHERE idbasket = 17;
 /
 -- # 5-5
-CREATE OR REPLACE PROCEDURE STATUS_SHIP_SP
+CREATE OR REPLACE 
+PROCEDURE STATUS_SHIP_SP
 (p_baskid   IN  bb_basketstatus.idbasket%TYPE,
  p_date     IN  DATE,
  p_shipp    IN  bb_basketstatus.shipper%TYPE,
@@ -146,7 +150,8 @@ SELECT idstatus, idbasket, idstage, dtstage, shipper, shippingnum
 FROM bb_basketstatus;
 /
 -- # 5-6
-CREATE OR REPLACE PROCEDURE STATUS_SP 
+CREATE OR REPLACE 
+PROCEDURE STATUS_SP 
 (p_basketid     IN  bb_basketstatus.idbasket%TYPE,
  p_date         OUT bb_basketstatus.dtstage%TYPE,
  p_descr        OUT bb_basketstatus.notes%TYPE)
@@ -178,7 +183,7 @@ BEGIN
     STATUS_SP(4,lv_date, lv_desc);
     DBMS_OUTPUT.PUT_LINE(lv_date);
     DBMS_OUTPUT.PUT_LINE(lv_desc);
---    DBMS_OUTPUT.PUT_LINE('');
+
     STATUS_SP(6,lv_date, lv_desc);
     DBMS_OUTPUT.PUT_LINE(lv_date);
     DBMS_OUTPUT.PUT_LINE(lv_desc);
@@ -187,7 +192,8 @@ END;
 -- #5-7
 DELETE FROM bb_promolist WHERE
     year = 2012;
-CREATE OR REPLACE PROCEDURE PROMO_SHIP_SP
+CREATE OR REPLACE 
+PROCEDURE PROMO_SHIP_SP
 (p_date     IN  DATE,
  p_month    IN  bb_promolist.month%TYPE,
  p_year     IN  bb_promolist.year%TYPE)
@@ -228,11 +234,12 @@ BEGIN
     PROMO_SHIP_SP('15-FEB-12', 'APR', 2012);
 END;
 /
-SELECT idshopper, month, year, promo_flag, used
+SELECT *
 FROM bb_promolist;
 /
 -- # 5-8
-CREATE OR REPLACE PROCEDURE BASKET_ADD_SP 
+CREATE OR REPLACE 
+PROCEDURE BASKET_ADD_SP 
 (p_baskid    IN bb_basketitem.idbasket%TYPE,
  p_produid   IN bb_basketitem.idproduct%TYPE,
  p_qty       IN bb_basketitem.quantity%TYPE,
@@ -253,4 +260,82 @@ BEGIN
 END;
 /
 SELECT *
-FROM bb_basketitem; 
+FROM bb_basketitem;
+/
+-- # 5-9
+CREATE OR REPLACE 
+PROCEDURE MEMBER_CK_SP
+(p_usrnm    IN VARCHAR2,
+ p_pswrd    IN OUT VARCHAR2,
+ p_valcook  OUT VARCHAR2,
+ p_check    OUT VARCHAR2)
+AS
+BEGIN
+  SELECT firstname ||' '|| lastname, cookie
+  INTO p_pswrd, p_valcook
+  FROM bb_shopper
+  WHERE username = p_usrnm
+  AND password = p_pswrd;
+  p_check := 'VALID';
+EXCEPTION
+    WHEN no_data_found THEN
+        p_check := 'INVALID';
+END MEMBER_CK_SP;
+/
+DECLARE
+  lv_usrn bb_shopper.username%TYPE := 'rat55'; 
+  lv_pass VARCHAR2(25) := 'kile';
+  lv_valcook bb_shopper.cookie%TYPE;
+  lv_check VARCHAR2(10);
+BEGIN
+    MEMBER_CK_SP(lv_usrn, lv_pass, lv_valcook, lv_check);
+    IF lv_check = 'INVALID' THEN
+         DBMS_OUTPUT.PUT_LINE(lv_check);
+    ELSE
+         DBMS_OUTPUT.PUT_LINE(lv_pass ||' '|| lv_valcook);
+   END IF;
+END;
+/
+DECLARE
+  lv_usrn bb_shopper.username%TYPE := 'rat'; 
+  lv_pass VARCHAR2(25) := 'kile';
+  lv_valcook bb_shopper.cookie%TYPE;
+  lv_check VARCHAR2(10);
+BEGIN
+    MEMBER_CK_SP(lv_usrn, lv_pass, lv_valcook, lv_check);
+    IF lv_check = 'INVALID' THEN
+         DBMS_OUTPUT.PUT_LINE(lv_check);
+    ELSE
+         DBMS_OUTPUT.PUT_LINE(lv_pass ||' '|| lv_valcook);
+   END IF;
+EXCEPTION
+    WHEN no_data_found THEN
+DBMS_OUTPUT.PUT_LINE(lv_check);
+END;
+/
+CLEAR COLUMNS
+CLEAR BRAKES
+TTITLE OFF
+TTITLE CENTER 'HO5-JOSHUA MEMBRENO'
+COLUMN IDPRODUCT HEADING 'ID|PROD' FORMAT A5 WRAP
+COLUMN PRODUCTNAME HEADING 'PROD|NAME' FORMAT A5 WRAP
+COLUMN DESCRIPTION HEADING 'DESC' FORMAT A10 WRAP
+COLUMN PRODUCTIMAGE HEADING 'PROD|IMAGE' FORMAT A5
+COLUMN PRICE HEADING 'PRICE' FORMAT A5
+COLUMN SALESTART HEADING 'SALE|START' FORMAT A8
+COLUMN SALEEND HEADING 'SALE|END' FORMAT A8
+COLUMN SALEPRICE HEADING 'SALE|PRICE' FORMAT A5 WRAP
+COLUMN ACTIVE HEADING '|ACTIVE' FORMAT A5
+COLUMN FEATURED HEADING '|FEATURED' FORMAT A5 WRAP
+COLUMN FEATURESTART HEADING 'FEATURE | START' FORMAT A2
+COLUMN FEATUREEND HEADING 'FEATURE | END' FORMAT A2
+COLUMN TYPE HEADING '|TYPE' FORMAT A2
+COLUMN IDDEPARTMENT HEADING 'ID|DEP' FORMAT A5 WRAP
+COLUMN STOCK HEADING 'STOCK' FORMAT A2 WRAP
+COLUMN ORDERED HEADING 'ORDERED' FORMAT A5 WRAP
+COLUMN REORDER HEADING 'REORDER' FORMAT A5 WRAP
+COLUMN USED HEADING 'USED' FORMAT A15 WRAP
+COLUMN MONTH HEADING 'MONTH' FORMAT A5 WRAP
+COLUMN PROMO_FLAG HEADING 'PROM|FLAG' FORMAT A5 WRAP
+COLUMN USED HEADING 'USED' FORMAT A5 WRAP
+/
